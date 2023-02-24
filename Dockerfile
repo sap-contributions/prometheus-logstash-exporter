@@ -1,6 +1,9 @@
-FROM golang:1.19-alpine AS builder
+FROM golang:1.20.1-alpine AS builder
 WORKDIR /src/
-COPY go.mod go.sum main.go ./
+COPY go.mod go.mod
+COPY go.sum go.sum
+COPY main.go main.go
+RUN go mod download
 RUN apk -U add binutils && CGO_ENABLED=0 go build -o prometheus-logstash-exporter && strip prometheus-logstash-exporter
 
 FROM scratch
