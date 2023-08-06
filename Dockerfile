@@ -9,5 +9,6 @@ RUN apk -U add binutils && CGO_ENABLED=0 go build -o prometheus-logstash-exporte
 FROM scratch
 WORKDIR /
 COPY --from=builder /src/prometheus-logstash-exporter /
+USER 1000
 EXPOSE 9304
 ENTRYPOINT ["/prometheus-logstash-exporter"]
