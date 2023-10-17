@@ -55,7 +55,7 @@ build:binaries:
   stage: binaries
   extends:
     - .release
-  image: golang:1.13-alpine
+  image: golang:1.21-alpine
   script:
     - apk add -U binutils
     - ci/build_binaries
