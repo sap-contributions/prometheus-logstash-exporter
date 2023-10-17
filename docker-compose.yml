@@ -1,7 +1,7 @@
 version: "3"
 services:
   logstash:
-    image: docker.elastic.co/logstash/logstash-oss:6.1.1
+    image: docker.elastic.co/logstash/logstash-oss:8.10.4
     ports:
     - "9600:9600"
     volumes:
