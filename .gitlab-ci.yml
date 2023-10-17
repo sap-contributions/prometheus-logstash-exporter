@@ -45,7 +45,7 @@ build:image:
   stage: packages
   image: docker:latest
   services:
-    - docker:19.03.5-dind
+    - docker:19.03.15-dind
   except:
     - master
   script:
