@@ -1,3 +1,0 @@
-#!/bin/sh
-
-package_cloud push alxrem/prometheus-logstash-exporter/$DIST .result/*.deb
