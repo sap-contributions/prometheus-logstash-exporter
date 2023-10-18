@@ -6,7 +6,7 @@
 
 Prometheus exporter for metrics provided by [Node Stats API](https://www.elastic.co/guide/en/logstash/current/monitoring-logstash.html) of Logstash.
 
-## Building
+## Requirements and Building
 
 *Golang must be installed on the local machine!*
 
@@ -51,7 +51,7 @@ spec:
   - name: logstash
   (... setup for logstash ...)
   - name: exporter
-    image: <PathToYourDockerContainerWithName>:<VersionForYourDockerContainer>
+    image: ghcr.io/sap/prometheus-logstash-exporter:latest
     args:
       - --web.listen-address=:9310 # by default is used port 9304, but feel free adapt this setting
     ports:
