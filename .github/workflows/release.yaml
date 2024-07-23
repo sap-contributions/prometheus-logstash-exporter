@@ -44,7 +44,7 @@ jobs:
         fi
 
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4.1.7
       with:
         token: ${{ secrets.WORKFLOW_USER_GH_TOKEN }}
         fetch-depth: 0
