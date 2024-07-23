@@ -1,5 +1,6 @@
 # Logstash exporter
 
+
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP/prometheus-logstash-exporter)](https://api.reuse.software/info/github.com/SAP/prometheus-logstash-exporter)
 
 ## About this project
