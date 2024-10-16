@@ -13,13 +13,14 @@ Prometheus exporter for metrics provided by [Node Stats API](https://www.elastic
 ```bash
 $ git clone https://github.com/sap/prometheus-logstash-exporter.git
 $ cd prometheus-logstash-exporter
-$ CGO_ENABLED=0 go build -o prometheus-logstash-exporter
+$ mkdir -p dist
+$ CGO_ENABLED=0 go build -o dist/prometheus-logstash-exporter
 ```
 
 ## Running
 
 ```bash
-./prometheus-logstash-exporter <flags>
+./dist/prometheus-logstash-exporter <flags>
 ```
 
 *If you hold Logstash defaults, the Exporter follow them too.*
@@ -27,8 +28,8 @@ $ CGO_ENABLED=0 go build -o prometheus-logstash-exporter
 To see all available configuration flags:
 
 ```bash
-$ ./prometheus-logstash-exporter -h
-Usage of ./prometheus-logstash-exporter:
+$ ./dist/prometheus-logstash-exporter -h
+Usage of ./dist/prometheus-logstash-exporter:
   -logstash.host string
         Host address of logstash server. (default "localhost")
   -logstash.port int
