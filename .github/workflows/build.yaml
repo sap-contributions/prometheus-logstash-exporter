@@ -3,11 +3,11 @@ name: Build package
 on:
   push:
     branches:
-    - master
+    - main
 
   pull_request:
     branches:
-    - master
+    - main
 
 concurrency: build-${{ github.ref }}
 
