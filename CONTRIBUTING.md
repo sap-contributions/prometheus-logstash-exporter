@@ -22,6 +22,12 @@ Should you wish to work on an issue, please claim it first by commenting on the 
 
 If you have questions about one of the issues, please comment on them, and one of the maintainers will clarify.
 
+## Contributing with AI-generated code
+
+As artificial intelligence evolves, AI-generated code is becoming valuable for many software projects, including open-source initiatives. While we recognize the potential benefits of incorporating AI-generated content into our open-source projects there a certain requirements that need to be reflected and adhered to when making contributions.
+
+Please see our [guideline for AI-generated code contributions to SAP Open Source Software Projects](CONTRIBUTING_USING_GENAI.md) for these requirements.
+
 ## Contributing Code or Documentation
 
 You are welcome to contribute code in order to fix a bug or to implement a new feature that is logged as an issue.
