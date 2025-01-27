@@ -38,8 +38,8 @@ jobs:
     steps:
     - name: Validate ref
       run: |
-        if [ "${{ github.ref }}" != refs/heads/master ]; then
-          >&2 echo "Invalid ref: ${{ github.ref }} (expected: refs/heads/master)"
+        if [ "${{ github.ref }}" != refs/heads/main ]; then
+          >&2 echo "Invalid ref: ${{ github.ref }} (expected: refs/heads/main)"
           exit 1
         fi
 
