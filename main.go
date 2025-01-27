@@ -19,15 +19,17 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log/slog"
 	"net/http"
-	"time"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
-	"log"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/common/promslog"
 )
 
 const (
@@ -38,11 +40,12 @@ type Exporter struct {
 	nodeStatsUri string
 	timeout      time.Duration
 	up           prometheus.Gauge
+	logger       *slog.Logger
 }
 
 type Stats map[string]interface{}
 
-func NewExporter(host string, timeout time.Duration) *Exporter {
+func NewExporter(host string, timeout time.Duration, logger *slog.Logger) *Exporter {
 	return &Exporter{
 		nodeStatsUri: fmt.Sprintf("http://%s/_node/stats", host),
 		timeout:      timeout,
@@ -53,6 +56,7 @@ func NewExporter(host string, timeout time.Duration) *Exporter {
 				Help:      "Was the last scrape of logstash successful",
 			},
 		),
+		logger: logger,
 	}
 }
 
@@ -63,7 +67,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	stats, err := e.fetchStats()
 	if err != nil {
-		log.Println("ERROR:", err)
+		e.logger.Error("Could not fetch stats", "error", err)
 	} else {
 		e.collectMetrics(stats, ch)
 	}
@@ -152,7 +156,7 @@ func (e *Exporter) collectFields(name string, data interface{}, labels prometheu
 func (e *Exporter) collectPipeline(pipelineName string, data interface{}, ch chan<- prometheus.Metric) {
 	stats, ok := data.(map[string]interface{})
 	if !ok {
-		log.Println("ERROR: Wrong format of pipeline statistics")
+		e.logger.Error("wrong format of pipeline statistics")
 		return
 	}
 
@@ -233,7 +237,7 @@ func (e *Exporter) fetch(uri string) ([]byte, error) {
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			log.Println("ERROR:", err)
+			e.logger.Error("could not close response body", "error", err)
 		}
 	}()
 
@@ -264,10 +268,26 @@ func main() {
 		logstashHost  = flag.String("logstash.host", "localhost", "Host address of logstash server.")
 		logstashPort  = flag.Int("logstash.port", 9600, "Port of logstash server.")
 		timeout       = flag.Duration("logstash.timeout", 5*time.Second, "Timeout to get stats from logstash server.")
+		logFormat     = flag.String("log.format", "logfmt", "Output format of log messages. One of: ["+strings.Join(promslog.FormatFlagOptions, ", ")+"]")
+		logLevel      = flag.String("log.level", "info", "Only log messages with the given severity or above. One of: ["+strings.Join(promslog.LevelFlagOptions, ", ")+"]")
 	)
 	flag.Parse()
 
-	exporter := NewExporter(fmt.Sprintf("%s:%d", *logstashHost, *logstashPort), *timeout)
+	config := &promslog.Config{
+		Level:  &promslog.AllowedLevel{},
+		Format: &promslog.AllowedFormat{},
+	}
+
+	if err := config.Level.Set(*logLevel); err != nil {
+		panic(err)
+	}
+	if err := config.Format.Set(*logFormat); err != nil {
+		panic(err)
+	}
+
+	log := promslog.New(config)
+
+	exporter := NewExporter(fmt.Sprintf("%s:%d", *logstashHost, *logstashPort), *timeout, log)
 	prometheus.MustRegister(exporter)
 
 	go func() {
@@ -279,10 +299,10 @@ func main() {
 
 		select {
 		case <-intChan:
-			log.Println("INFO: Received SIGINT, exiting")
+			log.Info("Received SIGINT, exiting")
 			os.Exit(0)
 		case <-termChan:
-			log.Println("INFO: Received SIGTERM, exiting")
+			log.Info("Received SIGTERM, exiting")
 			os.Exit(0)
 		}
 	}()
@@ -290,6 +310,7 @@ func main() {
 	http.Handle(*metricsPath, promhttp.Handler())
 	http.HandleFunc("/-/ping", servePong)
 
-	log.Println("INFO: Listening on", *listenAddress)
-	log.Println("FATAL:", http.ListenAndServe(*listenAddress, nil))
+	log.Info("Listening", "address", *listenAddress)
+	log.Error("Listen and serve", "error", http.ListenAndServe(*listenAddress, nil))
+	os.Exit(1)
 }
