@@ -3,7 +3,7 @@ module github.com/sap-contributions/prometheus-logstash-exporter
 go 1.23.5
 
 require (
-	github.com/prometheus/client_golang v1.20.4
+	github.com/prometheus/client_golang v1.20.5
 	github.com/prometheus/common v0.62.0
 )
 
